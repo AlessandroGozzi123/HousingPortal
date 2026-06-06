@@ -1,0 +1,12 @@
+{
+  "name": "hypixel-housing-monitor",
+  "version": "1.0.0",
+  "description": "Active public sessions monitor for Hypixel Housing",
+  "main": "index.html",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hypixel Active Housing Monitor</title>
+    <!-- Google Fonts: VT323 (Minecraft Pixel Font) & Outfit & Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="particle-container" id="particle-container"></div>
+    <div class="glass-bg-glow"></div>
+    <div class="glass-bg-glow secondary"></div>
+
+    <div class="app-container">
+        <!-- Header Section -->
+        <header class="dashboard-header animate-fade-in">
+            <div class="logo-area">
+                <div class="logo-icon">
+                    <i data-lucide="home" class="pulse-icon"></i>
+                </div>
+                <div>
+                    <h1 class="gradient-text">Hypixel Housing Portal</h1>
+                    <div class="subtitle-author">
+                        <img src="img/estathe_icon.png" alt="EstaThe icon" class="author-icon">
+                        <span class="subtitle">made by EstaThe</span>
+                        <div class="discord-badge" onclick="copyToClipboard('estathe', 'Discord username copied! Add me on Discord.')" title="Click to copy Discord username">
+                            <svg class="discord-badge-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 127.14 96.36" fill="currentColor"><path d="M107.7,8.07A105.15,105.15,0,0,0,77.26,0a77.19,77.19,0,0,0-3.3,6.83A96.67,96.67,0,0,0,53.22,6.83,77.19,77.19,0,0,0,49.88,0,105.15,105.15,0,0,0,19.44,8.07C3.66,31.58-1.86,54.65,1,77.53A105.73,105.73,0,0,0,32,96.36a77.7,77.7,0,0,0,6.63-10.85,68.43,68.43,0,0,1-10.5-5A52.57,52.57,0,0,0,30.3,78.26a76.48,76.48,0,0,0,66.54,0,52.57,52.57,0,0,0,2.15,2.25,68.43,68.43,0,0,1-10.5,5,77.7,77.7,0,0,0,6.63,10.85,105.73,105.73,0,0,0,31.58-18.83C129,54.65,122.94,31.58,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60,31,53S36.18,40.36,42.45,40.36,53.83,46,53.83,53,48.72,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.24,60,73.24,53S78.41,40.36,84.69,40.36,96.07,46,96.07,53,91,65.69,84.69,65.69Z"/></svg>
+                            <span class="discord-badge-text">estathe</span>
+                            <i data-lucide="copy" class="discord-badge-copy"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Header Stats Panel -->
+            <div class="header-stats">
+                <div class="header-stat-card">
+                    <span class="header-stat-label">Active Houses</span>
+                    <span class="header-stat-value active-houses" id="stat-active-houses">-</span>
+                </div>
+                <div class="header-stat-card">
+                    <span class="header-stat-label">Total Players</span>
+                    <span class="header-stat-value total-players" id="stat-total-players">-</span>
+                </div>
+                <div class="header-stat-card">
+                    <span class="header-stat-label">Total Cookies</span>
+                    <span class="header-stat-value total-cookies" id="stat-total-cookies">-</span>
+                </div>
+            </div>
+
+            <div class="header-actions-group">
+                <button class="api-status-badge sound-btn" id="sound-toggle-btn" title="Toggle Sound Effects">
+                    <i data-lucide="volume-2" class="sound-icon"></i>
+                    <span class="sound-text">Sound On</span>
+                </button>
+                <div class="api-status-badge success" id="connection-status">
+                    <span class="status-dot"></span>
+                    <span class="status-text">System Ready</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Pinned Creations Section -->
+        <section class="pinned-section animate-slide-up" style="animation-delay: 0.15s;">
+            <div class="pinned-header">
+                <i data-lucide="star" class="pinned-icon"></i>
+                <h2>EstaThe's Pinned Creations</h2>
+            </div>
+            <div class="pinned-grid" id="pinned-grid"></div>
+        </section>
+
+        <!-- Bookmarked / Favorite Sessions Section -->
+        <section class="pinned-section animate-slide-up" id="favorites-section" style="display: none; animation-delay: 0.18s; background-color: rgba(255, 170, 0, 0.03); border-color: var(--color-gold);">
+            <div class="pinned-header">
+                <i data-lucide="star" class="pinned-icon" style="color: var(--color-gold); animation: none;"></i>
+                <h2 style="color: var(--color-gold);">Your Bookmarked Sessions</h2>
+            </div>
+            <div class="pinned-grid" id="favorites-grid"></div>
+        </section>
+
+        <!-- Control Bar -->
+        <section class="controls-panel animate-slide-up" style="animation-delay: 0.2s;">
+            <div class="search-box">
+                <i data-lucide="search" class="search-icon"></i>
+                <input type="text" id="search-input" placeholder="Search by house name or owner name" autocomplete="off">
+                <button class="clear-btn" id="clear-search" style="display: none;">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+
+            <!-- Categories Checkboxes -->
+            <div class="categories-panel">
+                <span class="categories-title">Filter by Category:</span>
+                <div class="categories-grid">
+                    <label class="mc-checkbox-container">
+                        <input type="checkbox" class="category-checkbox" value="parkour">
+                        <span class="mc-checkmark"></span>
+                        <span class="checkbox-label">Parkour</span>
+                    </label>
+                    <label class="mc-checkbox-container">
+                        <input type="checkbox" class="category-checkbox" value="freebuild">
+                        <span class="mc-checkmark"></span>
+                        <span class="checkbox-label">Free Build</span>
+                    </label>
+                    <label class="mc-checkbox-container">
+                        <input type="checkbox" class="category-checkbox" value="2player">
+                        <span class="mc-checkmark"></span>
+                        <span class="checkbox-label">2 Player / Co-op</span>
+                    </label>
+                    <label class="mc-checkbox-container">
+                        <input type="checkbox" class="category-checkbox" value="pvp">
+                        <span class="mc-checkmark"></span>
+                        <span class="checkbox-label">PvP</span>
+                    </label>
+                    <label class="mc-checkbox-container">
+                        <input type="checkbox" class="category-checkbox" value="hangout">
+                        <span class="mc-checkmark"></span>
+                        <span class="checkbox-label">Hangout</span>
+                    </label>
+                    <label class="mc-checkbox-container">
+                        <input type="checkbox" class="category-checkbox" value="adventure">
+                        <span class="mc-checkmark"></span>
+                        <span class="checkbox-label">Adventure</span>
+                    </label>
+                    <label class="mc-checkbox-container">
+                        <input type="checkbox" class="category-checkbox" value="escape">
+                        <span class="mc-checkmark"></span>
+                        <span class="checkbox-label">Escape / Puzzle</span>
+                    </label>
+                    <label class="mc-checkbox-container">
+                        <input type="checkbox" class="category-checkbox" value="minigame">
+                        <span class="mc-checkmark"></span>
+                        <span class="checkbox-label">Minigame</span>
+                    </label>
+                    <label class="mc-checkbox-container">
+                        <input type="checkbox" class="category-checkbox" value="random">
+                        <span class="mc-checkmark"></span>
+                        <span class="checkbox-label">Random</span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="filters-row">
+                <div class="filter-group">
+                    <label for="sort-select">Sort By</label>
+                    <div class="select-wrapper">
+                        <select id="sort-select">
+                            <option value="players-desc">Players (High to Low)</option>
+                            <option value="players-asc">Players (Low to High)</option>
+                            <option value="cookies-desc">Cookies (High to Low)</option>
+                            <option value="name-asc">Name (A-Z)</option>
+                            <option value="created-desc">Newest First</option>
+                        </select>
+                        <i data-lucide="chevron-down" class="select-arrow"></i>
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <label class="mc-checkbox-container" style="padding-left: 28px; margin-top: 0;">
+                        <input type="checkbox" id="offline-toggle" checked>
+                        <span class="mc-checkmark"></span>
+                        <span class="checkbox-label">Include Offline Archives</span>
+                    </label>
+                </div>
+
+                <button class="btn btn-primary" id="refresh-btn">
+                    <i data-lucide="rotate-cw" id="refresh-icon"></i>
+                    <span>Refresh</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- Main Display / Results -->
+        <main class="results-section animate-slide-up" style="animation-delay: 0.3s;">
+            <!-- Loading Skeleton -->
+            <div class="skeleton-grid" id="skeleton-grid" style="display: none;">
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
+                <div class="skeleton-card"></div>
+            </div>
+
+            <!-- Main House Grid -->
+            <div class="house-grid" id="house-grid"></div>
+
+            <!-- Error State -->
+            <div class="state-container error-state" id="error-state" style="display: none;">
+                <div class="state-icon">
+                    <i data-lucide="alert-triangle"></i>
+                </div>
+                <h3 class="state-title">Connection Error</h3>
+                <p class="state-desc" id="error-message">Failed to connect to the Hypixel API.</p>
+                <div class="error-actions">
+                    <button class="btn btn-secondary" id="retry-btn">Try Again</button>
+                    <button class="btn btn-outline" id="cors-help-btn">CORS Instructions</button>
+                </div>
+            </div>
+
+            <!-- Empty State -->
+            <div class="state-container empty-state" id="empty-state" style="display: none;">
+                <div class="state-icon">
+                    <i data-lucide="inbox"></i>
+                </div>
+                <h3 class="state-title">No Houses Found</h3>
+                <p class="state-desc">We couldn't find any active houses matching your search or filters.</p>
+                <button class="btn btn-secondary" id="reset-filters-btn">Reset Search & Filters</button>
+            </div>
+        </main>
+    </div>
+
+    <!-- CORS Help Modal -->
+    <div class="modal-overlay" id="cors-modal" style="display: none;">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 class="modal-title">Understanding CORS & Hypixel API</h3>
+                <button class="close-btn" id="close-modal-btn">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>The Hypixel API does not serve CORS headers. When you try to connect directly from a web browser (via <code>fetch()</code>), the browser blocks the request to prevent cross-origin scripting vulnerabilities.</p>
+                
+                <h4>Suggested Workarounds:</h4>
+                <ol class="help-list">
+                    <li>
+                        <strong>Use Local Server Proxy (Recommended & Default):</strong>
+                        <p>We've integrated a local Node.js proxy server running on <code>http://localhost:3000/api/active-housing</code>. It fetches the data server-to-server and forwards it to your browser instantly without CORS or timeout issues.</p>
+                    </li>
+                    <li>
+                        <strong>Install a Browser Extension:</strong>
+                        <p>For development, you can install extensions like "Allow CORS: Access-Control-Allow-Origin" for Chrome or Firefox, disable the "Use Local Proxy" toggle, and run the fetch directly.</p>
+                    </li>
+                    <li>
+                        <strong>Launch Chrome with Web Security Disabled:</strong>
+                        <p>You can run Chrome via the command line with flag <code>--disable-web-security</code> and a temporary user directory to bypass CORS locally.</p>
+                    </li>
+                </ol>
+                <div class="modal-warning">
+                    <i data-lucide="shield-alert" class="warning-icon"></i>
+                    <p><strong>Security Notice:</strong> In a production environment, never expose your API key in client-side code. Always create a backend server proxy (like our Node.js server) to call the Hypixel API securely.</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="modal-ok-btn">Understood</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main JavaScript File -->
+    <script src="script.js"></script>
+</body>
+</html>
