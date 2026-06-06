@@ -1,3 +1,4 @@
+<img width="1842" height="903" alt="Snímek obrazovky 2026-05-28 202059" src="https://github.com/user-attachments/assets/f56fabea-58de-41c1-9f3d-c649b658969e" />
 # Hypixel Housing Portal & Archive 🚀
 
 A web application designed to monitor and archive housings on the **Hypixel** Minecraft server. The application features a responsive layout inspired by the classic Minecraft UI.
